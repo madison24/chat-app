@@ -6,6 +6,8 @@ import {
   TextInput,
   ImageBackground,
   TouchableOpacity,
+  Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 
 const Start = ({ navigation }) => {
@@ -29,6 +31,7 @@ const Start = ({ navigation }) => {
             onChangeText={setName}
             placeholder="Type your username here"
           />
+
           <Text style={styles.chooseBackground}>Choose Background Color:</Text>
 
           {/* choose background color here */}
@@ -60,6 +63,9 @@ const Start = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </ImageBackground>
+      {Platform.OS === "ios" ? (
+        <KeyboardAvoidingView behavior="padding" />
+      ) : null}
     </View>
   );
 };
