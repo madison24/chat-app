@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, View, Platform, KeyboardAvoidingView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Platform,
+  KeyboardAvoidingView,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import {
   collection,
@@ -10,11 +17,13 @@ import {
 } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MapView from "react-native-maps";
+import { Audio } from "expo-av";
 import CustomActions from "./CustomActions";
 
 const Chat = ({ route, navigation, db, isConnected, storage }) => {
   const { name, background, id } = route.params;
   const [messages, setMessages] = useState([]);
+  let soundObject = null;
 
   // database message
   let unsubMessages;
@@ -42,6 +51,7 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
     // Clean up code
     return () => {
       if (unsubMessages) unsubMessages();
+      if (soundObject) soundObject.unloadAsync();
     };
   }, [isConnected]);
 
@@ -86,6 +96,32 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
     else return null;
   };
 
+  const renderAudioBubble = (props) => {
+    return (
+      <View {...props}>
+        <TouchableOpacity
+          style={{ backgroundColor: "#FF0", borderRadius: 10, margin: 5 }}
+          onPress={async () => {
+            try {
+              if (soundObject) soundObject.unloadAsync();
+              const { sound } = await Audio.Sound.createAsync({
+                uri: props.currentMessage.audio,
+              });
+              soundObject = sound;
+              await sound.playAsync();
+            } catch (error) {
+              console.error("Error playing audio:", error);
+            }
+          }}
+        >
+          <Text style={{ textAlign: "center", color: "black", padding: 5 }}>
+            Play Sound
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   // change name at top of screen to user's name
   navigation.setOptions({ title: name });
 
@@ -119,6 +155,7 @@ const Chat = ({ route, navigation, db, isConnected, storage }) => {
         onSend={(messages) => onSend(messages)}
         renderActions={renderCustomActions}
         renderCustomView={renderCustomView}
+        renderMessageAudio={renderAudioBubble}
         user={{
           _id: id,
           name,
