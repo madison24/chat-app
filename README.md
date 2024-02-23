@@ -15,7 +15,7 @@ Chat App is an app that provides users with a chat interface that includes optio
 - A page where users can enter their name and choose a background color for the chat screen before joining the chat.
 - A page displaying the conversation, as well as an input field and submit button.
 - Users data gets stored online and offline.
-  -The chat provides users with two additional communication features: sending images,location data, and audio.
+- The chat provides users with two additional communication features: sending images,location data, and audio.
 
 ## Setting up the App:
 
